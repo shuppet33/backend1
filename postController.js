@@ -5,8 +5,6 @@ class PostController {
    async create(req, res) {
       try {
          const object = req.body
-         const picture = req.files.picture
-         const fileName = fileService.saveFile(picture)
 
          createPost(object, (err, post) => {
             if (err) {
