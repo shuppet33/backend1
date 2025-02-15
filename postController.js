@@ -1,10 +1,14 @@
-import { createPost , deletePostById, getAllPosts, getOnePosts, putPost } from './functionPost.js';
+import { createPost , deleteOnePost, getAllPosts, getOnePost, putPost } from './functionPost.js';
+import fileService from './fileService.js';
 
 class PostController {
    async create(req, res) {
       try {
-         const a = req.body;
-         createPost(a.author, a.title, a.content, (err, post) => {
+         const object = req.body
+         const picture = req.files.picture
+         const fileName = fileService.saveFile(picture)
+
+         createPost(object, (err, post) => {
             if (err) {
                console.error('Ошибка:', err);
                return;
@@ -35,16 +39,13 @@ class PostController {
    async getOne(req, res) {
       try {
          const id = req.params.id
-         getOnePosts(id, (err, post) => {
+         getOnePost(id, (err, post) => {
             if (err) {
                console.log('Ошибка: ', err)
                return;
             }
             res.json(post)
          })
-         if (!id) {
-            res.status(400),json({message: 'Id не указан'})
-         }
       } catch (e) {
          res.status(500).json(e)
       }
@@ -54,9 +55,9 @@ class PostController {
       try {
          const post = req.body
          if (!post.id) {
-            res.status(400),json({message: 'Id не указан'})
+            res.status(400).json({message: 'Id не указан'})
          }
-         putPost(post.id, post.author, post.title, post.content, (err, post) => {
+         putPost(post, (err, post) => {
             if (err) {
                console.log('Ошибка: ', err)
                return;
@@ -70,7 +71,14 @@ class PostController {
 
    async delete(req, res) {
       try {
-
+         const id = req.params.id
+         deleteOnePost(id, (err, post) => {
+            if (err) {
+               console.log('Ошибка: ', err)
+               return;
+            }
+            res.json('Пост удален')
+         })
       } catch (e) {
          res.status(500).json(e)
       }

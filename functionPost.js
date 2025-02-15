@@ -6,56 +6,56 @@ const connection = mysql.createConnection({
    database: 'mydatabase' 
 });
 
+function unificationKeyObject (object) {
+   const arr = []
+   for (let key in object) {
+      arr.push(`'${object[key]}'`)
+   }
+   return arr.join(', ')
+}
 
-// const Post = {
-//    author: {type: String, required: true},
-//    title: {type: String, required: true},
-//    content: {type: String, required: true},
-//    picture: {type: String}
-// }
+function keyObject (object) {
+   const arr = []
+   for (let key in object) {
+      arr.push(`${key}`)
+   }
+   return arr.join(', ')
+}
 
-export function createPost (author, title, content, callback) {
-   const query = `INSERT INTO posts (author, title, content) VALUES ('${author}', '${title}', '${content}')`
-   connection.query(query, (err, result, field) => {
+export function createPost (object, callback) {
+
+   const query = `INSERT INTO posts (${keyObject(object)}) VALUES (${unificationKeyObject(object)})`
+
+   connection.query(query, (err, results, field) => {
       if (err) {
          callback(err, null);
+         console.log(query)
          return;
       }
-      console.log('Пост создан с ID:', result.insertId);
+      console.log('Пост создан с ID:', results.insertId);
+
       const newPost = {
-         id: result.insertId,
-         author: author,
-         title: title,
-         content: content
+         id: results.insertId
       };
+      Object.assign(newPost, object)
       callback(null, newPost);
-
-      //  const postId = result.insertId;
-      //  console.log('Id поста', postId)
-
-      //  const selectQuery = `SELECT * FROM posts WHERE id = ${postId}`;
-      //  connection.query(selectQuery, [postId], (err, results) => {
-      //    if (err) {
-      //      console.error('Ошибка при получении поста:', err);
-      //      callback(err, null);
-      //      return;
-      //    }
-      //    callback(null, results);
-      //  });
    });
 }
 
-export function deletePostById(postId) {
+export function deleteOnePost(postId, callback) {
    const query = `DELETE FROM posts WHERE id = ${postId}`;
-   connection.query(query, (err, result) => {
+   connection.query(query, (err, results) => {
      if (err) {
+       callback(err, null)
        console.error('Ошибка при удалении поста:', err);
        return;
      }
+
+     callback(null, results)
      console.log('Пост с ID', postId, 'удалён');
    });
 }
- 
+
 export function getAllPosts (callback) {
    const query = 'SELECT * FROM posts';
    connection.query(query, (err, results) => {
@@ -68,7 +68,7 @@ export function getAllPosts (callback) {
    })
  }
 
- export function getOnePosts (params, callback) {
+ export function getOnePost (params, callback) {
    const query = `SELECT * FROM posts WHERE id = ${params}`;
    connection.query(query, (err, results) => {
       if (err) {
@@ -80,20 +80,20 @@ export function getAllPosts (callback) {
    })
  }
 
-export function putPost (id, author, title, content, callback) {
-   const query = `UPDATE posts SET author = '${author}', title = '${title}', content = '${content}' WHERE id = ${id}`;
+export function putPost (object, callback) {
+   const query = `UPDATE posts SET author = '${object.author}', title = '${object.title}', content = '${object.content}' WHERE id = ${object.id}`;
    connection.query(query, (err, results) => {
       if (err) {
          console.error('Ошибка при обновлении поста:', err);
          callback(err, null);
          return;
       }
-      console.log('Пост обновлен с ID:', id);
+
       const newPost = {
-         id: id,
-         author: author,
-         title: title,
-         content: content
+         id: object.id,
+         author: object.author,
+         title: object.title,
+         content: object.content
       };
       callback(null, newPost)
    })

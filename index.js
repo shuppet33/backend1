@@ -1,7 +1,8 @@
 import express from 'express'
 import mysql from 'mysql2'
-import { createPost , deletePostById } from './functionPost.js';
 import router from './router.js'
+import fileupload from 'express-fileupload'
+import cors from 'cors'
 
 const PORT = 5001
 
@@ -31,7 +32,8 @@ const connection = mysql.createConnection({
 // });
 
 app.use(express.json())
-
+app.use(fileupload({}))
+app.use(cors())
 app.use('/api', router)
 
 async function startApp() {
