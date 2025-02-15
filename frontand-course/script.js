@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
          console.log('Ошибка при получении поста', err)
       }
-      l
    }
 
    function displayPosts(posts){
