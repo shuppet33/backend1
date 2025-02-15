@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
          const postElement = document.createElement('div')
          postElement.innerHTML = `
             <h4>${post.id}</h4>
-            <p>${post.title}</p>
-            <p><b>${post.author}</b></p>
+            <h2>${post.title}</h2>
             <p>${post.content}</p>
+            <p><b>${post.author}</b></p>
          `;
          postsContainer.appendChild(postElement)
       });

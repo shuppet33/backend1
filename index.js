@@ -36,6 +36,7 @@ app.use(fileupload({}))
 app.use(cors())
 app.use('/api', router)
 
+
 async function startApp() {
    try {
       connection.connect((err) => {
